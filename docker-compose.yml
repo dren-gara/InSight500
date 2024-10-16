@@ -1,0 +1,38 @@
+version: '3.8'
+services:
+  insight500-api:
+    build: ./InSight500.API
+    ports:
+      - "5001:80"
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      - ConnectionStrings__PostgresConnection=Host=postgres;Database=insight500_db;Username=postgres;Password=yourpassword
+      - ConnectionStrings__RedisConnection=redis:6379
+
+  insight500-dashboard:
+    build: ./InSight500.Dashboard
+    ports:
+      - "5000:80"
+    depends_on:
+      - insight500-api
+
+  postgres:
+    image: postgres
+    environment:
+      POSTGRES_DB: insight500_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: yourpassword
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
