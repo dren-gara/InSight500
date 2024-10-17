@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace InSight500.API.Migrations
 {
     [DbContext(typeof(InSight500DbContext))]
-    [Migration("20241016233251_InitialCreate")]
+    [Migration("20241017000610_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -25,7 +25,7 @@ namespace InSight500.API.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("InSight500.API.Data.StockPrice", b =>
+            modelBuilder.Entity("InSight500.API.Data.IncomeStatement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -33,31 +33,32 @@ namespace InSight500.API.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<decimal>("ClosePrice")
-                        .HasColumnType("numeric");
-
-                    b.Property<DateTime>("Date")
+                    b.Property<DateTime>("FiscalDateEnding")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<decimal>("HighPrice")
+                    b.Property<decimal>("GrossProfit")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal>("LowPrice")
+                    b.Property<decimal>("NetIncome")
                         .HasColumnType("numeric");
 
-                    b.Property<decimal>("OpenPrice")
+                    b.Property<decimal>("OperatingIncome")
                         .HasColumnType("numeric");
+
+                    b.Property<string>("ReportedCurrency")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<string>("Symbol")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<long>("Volume")
-                        .HasColumnType("bigint");
+                    b.Property<decimal>("TotalRevenue")
+                        .HasColumnType("numeric");
 
                     b.HasKey("Id");
 
-                    b.ToTable("StockPrices");
+                    b.ToTable("IncomeStatements");
                 });
 #pragma warning restore 612, 618
         }

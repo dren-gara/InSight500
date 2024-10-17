@@ -13,22 +13,22 @@ namespace InSight500.API.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "StockPrices",
+                name: "IncomeStatements",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     Symbol = table.Column<string>(type: "text", nullable: false),
-                    OpenPrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    ClosePrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    HighPrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    LowPrice = table.Column<decimal>(type: "numeric", nullable: false),
-                    Volume = table.Column<long>(type: "bigint", nullable: false),
-                    Date = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    FiscalDateEnding = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    ReportedCurrency = table.Column<string>(type: "text", nullable: false),
+                    GrossProfit = table.Column<decimal>(type: "numeric", nullable: false),
+                    TotalRevenue = table.Column<decimal>(type: "numeric", nullable: false),
+                    OperatingIncome = table.Column<decimal>(type: "numeric", nullable: false),
+                    NetIncome = table.Column<decimal>(type: "numeric", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_StockPrices", x => x.Id);
+                    table.PrimaryKey("PK_IncomeStatements", x => x.Id);
                 });
         }
 
@@ -36,7 +36,7 @@ namespace InSight500.API.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "StockPrices");
+                name: "IncomeStatements");
         }
     }
 }

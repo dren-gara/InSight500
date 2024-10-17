@@ -1,0 +1,86 @@
+@page "/income-statements"
+@using InSight500.Shared.Models
+@inject HttpClient Http
+
+<h3>Income Statement Dashboard</h3>
+
+<div class="mb-3">
+    <label for="symbolInput" class="form-label">Enter Stock Symbol:</label>
+    <input type="text" id="symbolInput" class="form-control" @bind="symbol" />
+</div>
+
+<button class="btn btn-primary" @onclick="FetchIncomeStatements">Get Income Statements</button>
+
+@if (isLoading)
+{
+    <p>Loading...</p>
+}
+
+@if (errorMessage != null)
+{
+    <p class="text-danger">@errorMessage</p>
+}
+
+@if (IncomeStatementList != null && IncomeStatementList.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Company</th>
+                <th>Total Revenue</th>
+                <th>Operating Income</th>
+                <th>Net Income</th>
+                <th>Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var incomeStatement in IncomeStatementList)
+            {
+                <tr>
+                    <td>@incomeStatement.Symbol</td>
+                    <td>@incomeStatement.TotalRevenue</td>
+                    <td>@incomeStatement.OperatingIncome</td>
+                    <td>@incomeStatement.NetIncome</td>
+                    <td>@incomeStatement.FiscalDateEnding</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private string symbol = string.Empty;
+    private List<IncomeStatement> IncomeStatementList = new List<IncomeStatement>();
+    private bool isLoading = false;
+    private string? errorMessage = null;
+
+    private async Task FetchIncomeStatements()
+    {
+        isLoading = true;
+        errorMessage = null;
+        IncomeStatementList.Clear();
+
+        if (string.IsNullOrEmpty(symbol))
+        {
+            errorMessage = "Please provide a valid stock symbol.";
+            isLoading = false;
+            return;
+        }
+
+        try
+        {
+            IncomeStatementList = await Http.GetFromJsonAsync<List<IncomeStatement>>($"api/income-statements?symbol={symbol.ToUpper()}");
+
+            if (IncomeStatementList == null || !IncomeStatementList.Any())
+            {
+                errorMessage = "No income statements found for the provided symbol.";
+            }
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = $"Error fetching data: {ex.Message}";
+        }
+
+        isLoading = false;
+    }
+}

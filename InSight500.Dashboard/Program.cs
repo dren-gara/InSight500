@@ -1,29 +1,42 @@
+using InSight500.Dashboard;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
-using InSight500.Dashboard.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
-builder.Services.AddSingleton<WeatherForecastService>();
+builder.Services.AddHttpClient();
+builder.Services.AddAntiforgery();
+builder.Services.AddHttpClient("InSight500API", client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5011/");
+});
+
+builder.Services.AddScoped(sp => sp.GetRequiredService<IHttpClientFactory>().CreateClient("InSight500API"));
+
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.Use((context, next) =>
+{
+    var antiforgery = context.RequestServices.GetRequiredService<Microsoft.AspNetCore.Antiforgery.IAntiforgery>();
+    antiforgery.GetAndStoreTokens(context);
+    return next();
+});
+
+app.UseAuthorization();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
